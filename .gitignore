@@ -2,3 +2,11 @@ input.mp4
 0transcription.txt
 transcription.txt
 output.mp3
+
+# Ignorar todo el contenido de las carpetas input y output
+input/*
+output/*
+
+# ¡Pero no ignorar las carpetas en sí!
+!input/
+!output/

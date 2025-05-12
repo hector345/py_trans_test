@@ -14,21 +14,40 @@ def transcribe_audio(audio_file, language="es"):
     return result['text']
 
 if __name__ == "__main__":
-    input_file = "/app/input.mp4"
-    output_file = "/app/output.mp3"
+    input_dir = "/app/input"
+    output_dir = "/app/output"
 
-    # Verificar si el archivo MP3 ya existe
-    if not os.path.exists(output_file):
-        # Convertir MP4 a MP3
-        convert_mp4_to_mp3(input_file, output_file)
-    else:
-        print(f"El archivo {output_file} ya existe. Saltando la conversión.")
+    # Crear la carpeta de salida si no existe
+    os.makedirs(output_dir, exist_ok=True)
 
-    # Transcribir el MP3 en español de México
-    transcript = transcribe_audio(output_file, language="es")
-    
-    # Guardar la transcripción en un archivo de texto
-    with open("/app/transcription.txt", "w") as f:
-        f.write(transcript)
-    
-    print("Transcripción completada. Ver archivo transcription.txt")
+    # Procesar todos los archivos en la carpeta de entrada
+    for file_name in os.listdir(input_dir):
+        input_path = os.path.join(input_dir, file_name)
+
+        # Si el archivo es MP4, convertirlo a MP3
+        if file_name.endswith(".mp4"):
+            mp3_file_name = file_name.replace(".mp4", ".mp3")
+            mp3_path = os.path.join(input_dir, mp3_file_name)
+
+            if not os.path.exists(mp3_path):
+                print(f"Convirtiendo {file_name} a {mp3_file_name}...")
+                convert_mp4_to_mp3(input_path, mp3_path)
+            else:
+                print(f"El archivo {mp3_file_name} ya existe. Saltando la conversión.")
+
+    # Transcribir todos los archivos MP3
+    for file_name in os.listdir(input_dir):
+        if file_name.endswith(".mp3"):
+            mp3_path = os.path.join(input_dir, file_name)
+            transcription_file = os.path.join(output_dir, file_name.replace(".mp3", ".txt"))
+
+            print(f"Transcribiendo {file_name}...")
+            transcript = transcribe_audio(mp3_path, language="es")
+
+            # Guardar la transcripción en la carpeta de salida
+            with open(transcription_file, "w") as f:
+                f.write(transcript)
+
+            print(f"Transcripción de {file_name} completada. Guardada en {transcription_file}")
+
+    print("Proceso completado.")

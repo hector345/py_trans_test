@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  whisper-transcriber:
+    image: whisper-transcriber
+    build:
+      context: .
+    volumes:
+      - ./input:/app/input
+      - ./output:/app/output
+    command: ["python", "transcribe.py"]
